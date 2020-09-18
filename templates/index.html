@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>event manager</title>
+    <style>
+        table, th, td
+        {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table {
+            width: 300px;
+            margin: 100px auto;
+        }
+        td {
+            text-align: center;
+        }
+        .createForm {
+            float: left;
+        }
+
+        .blank{
+            display: inline-block;
+            width: 50px;
+        }
+        .blank2{
+            display: inline-block;
+            width: 90px;
+        }
+    </style>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+    <script>
+        //display the data get from the server
+        function display(data){
+            var text="<table><tr><th>event</th><th>date</th></tr>";
+            for(let x in data){
+                text+="<tr><td>"+
+                    data[x].name+"</td><td>"+
+                    data[x].year+'-'+
+                    data[x].month+'-'+
+                    data[x].date+
+                    "</td></tr>";
+            }
+            text+="</table>"
+            document.getElementById("events").innerHTML = text;
+        }
+        //initialize the page
+        function init(){
+            $.ajax({
+                url:"/init",
+                contentType:"application/json;charset=UTF-8",
+                dataType:"json",
+                type:"post",
+                success:function(data){display(data)} ,
+                error:function(){
+                    alert("error");
+                }
+            });
+        }
+        //sent new event to server,store,and re-display the new content
+        function create(){
+            //check if required field is blank
+            var form = document.getElementById("createNew");
+            var elements = form.getElementsByTagName("input");
+            for(let i=0;i<elements.length;i++){
+                if(elements[i].checkValidity()==false){
+                    alert(elements[i].validationMessage);
+                    return;
+                }
+            }
+            //form js object
+            var name = document.getElementById("name").value;
+            var year=document.getElementById("year").value;
+            var month=document.getElementById("month").value;
+            var date=document.getElementById("date").value;
+            $.ajax({
+                url:"/add",
+                type:"get",
+                contentType : "application/json",
+                data: {"name":name,"year":year,"month":month,"date":date},
+                dataType: "json",
+                success:function(data){display(data)},
+                error:function(){
+                    alert("error!");
+                }
+            });
+        }
+    </script>
+
+</head>
+<body onload="init()">
+
+<div class="createForm">
+    <form id="createNew">
+        New Event: <input type="text" id="name" name="name" required><br>
+        Date:<div class="blank"></div><input type="text" style="width: 50px" id="year" name="year" placeholder="yyyy">-
+        <input type="text" style="width: 25px" id="month" required min="1" max="12" name="month" placeholder="mm">-
+        <input type="text" style="width: 25px" id="date" required min="1" max="31" name="date" placeholder="dd"><br>
+        <div class="blank2"></div><input type="submit"  onclick="create()" value="Create Event">
+    </form>
+</div>
+<div id="events"></div>
+</body>
+</html>
