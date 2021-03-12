@@ -3,4 +3,6 @@ google-cloud-storage
 google-cloud-datastore==1.15.0
 datetime
 google-auth==1.21.1
-requests==2.24.0
+requests
+bcrypt
+uwsgi==2.0.19.1
