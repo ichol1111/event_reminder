@@ -28,20 +28,23 @@
             display: inline-block;
             width: 90px;
         }
+        .event_operate {
+            float: right;
+        }
     </style>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
     <script>
         //display the data get from the server
         function display(data){
-            var text="<table><tr><th>event</th><th>date</th></tr>";
+            var text="<table><tr><th>event</th><th>date</th><th>ETA</th></tr>";
             for(let x in data){
                 text+="<tr><td>"+
                     data[x].name+"</td><td>"+
                     data[x].year+'-'+
                     data[x].month+'-'+
-                    data[x].date+
-                    "</td></tr>";
+                    data[x].date+ "</td><td>"+
+                    data[x].eta+"<td></tr>";
             }
             text+="</table>"
             document.getElementById("events").innerHTML = text;
@@ -75,13 +78,52 @@
             var year=document.getElementById("year").value;
             var month=document.getElementById("month").value;
             var date=document.getElementById("date").value;
+            var description=document.getElementById("description").value;
             $.ajax({
                 url:"/add",
                 type:"get",
                 contentType : "application/json",
-                data: {"name":name,"year":year,"month":month,"date":date},
+                data: {"name":name,"year":year,"month":month,"date":date,"description":description},
                 dataType: "json",
-                success:function(data){display(data)},
+                success:function(data){
+                    display(data);
+                },
+                error:function(){
+                    alert("error!");
+                }
+            });
+        }
+        function getEvent(){
+
+            var name = document.getElementById("get_event_name").value;
+            $.ajax({
+                url:"/check",
+                type:"get",
+                contentType : "application/json",
+                data: {"name":name},
+                dataType: "json",
+                success:function(data){
+                    document.getElementById("detail").innerHTML = "Event:"+data.name+'<br>'+
+                                                                  "Date:"+data.time+'<br'+
+                                                                    "description"+data.description;
+                },
+                error:function(){
+                    alert("error!");
+                }
+            });
+        }
+        function delEvent(){
+            //check if required field is blank
+            var name = document.getElementById("get_event_name").value;
+            $.ajax({
+                url:"/del",
+                type:"get",
+                contentType : "application/json",
+                data: {"name":name},
+                dataType: "json",
+                success:function(){
+                    // display(data)
+                },
                 error:function(){
                     alert("error!");
                 }
@@ -98,9 +140,22 @@
         Date:<div class="blank"></div><input type="text" style="width: 50px" id="year" name="year" placeholder="yyyy">-
         <input type="text" style="width: 25px" id="month" required min="1" max="12" name="month" placeholder="mm">-
         <input type="text" style="width: 25px" id="date" required min="1" max="31" name="date" placeholder="dd"><br>
+        <div class="blank2"></div>
+        <input type="text" style="width: 200px" id="description" required placeholder="input the description of the event"><br>
+
         <div class="blank2"></div><input type="submit"  onclick="create()" value="Create Event">
     </form>
 </div>
+<div class="event_operate">
+<form id="getEvent">
+    input the event name to operate:<br>
+    <input type="text" id="get_event_name" name="name" required><br>
+    <input type="submit"  onclick="getEvent()" value="Check Event">
+    <input type="submit"  onclick="delEvent()" value="Delete Event">
+</form>
+    <p id="detail" style="font-size: large"></p>
+</div>
 <div id="events"></div>
+<a href="/logout">logout</a>
 </body>
 </html>

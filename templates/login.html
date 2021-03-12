@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
+
+</head>
+<body>
+    <form action="/login" method="post">
+        username:<input type="text" name="username" id = "username"><br>
+        password:<input type="password" name = "password" id = "password"><br>
+        <input type="submit" value="login">
+    </form>
+    <a href={{url}}>login with google</a><br>
+    <a href="/go_register">register now</a>
+</body>
+</html>
